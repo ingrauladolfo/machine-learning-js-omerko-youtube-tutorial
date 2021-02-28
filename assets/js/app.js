@@ -1,6 +1,6 @@
 const colorInput = document.querySelector('input');
 const colorSection = document.querySelector('.section');
-
+const colorText = document.querySelector('.color-text b');
 const network = new brain.NeuralNetwork();
 // Training network
 network.train([
@@ -15,5 +15,25 @@ network.train([
 ])
 // Functions
 const changeColor = () =>{
-    
+    const color = colorInput.value;
+    const rgb = calcRgb(color);
+    const colorResult= brain.likely(rgb,network);
+    colorText.innerHTML = colorResult == 'dark' ? 'Dark': 'Light';
+    colorSection.style.backgroundColor = color;
 }
+
+const calcRgb = (hex)=>{
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m,r,g,b){
+        return r+r+g+g+b+b;
+    })
+    var result =  /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        red: Math.round(parseInt(result[1], 16)/2.55)/100,
+        green: Math.round(parseInt(result[2], 16)/2.55)/100,
+        blue: Math.round(parseInt(result[3], 16)/2.55)/100
+    } : null;
+}
+
+// Events
+colorInput.addEventListener('change', changeColor)
